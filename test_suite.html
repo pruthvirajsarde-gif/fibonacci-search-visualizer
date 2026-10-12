@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Automated In-Browser Test Suite for Fibonacci Search Visualizer</title>
+  <style>
+    body { font-family: sans-serif; background: #0f172a; color: #f8fafc; padding: 2rem; }
+    .pass { color: #34d399; font-weight: bold; }
+    .fail { color: #f87171; font-weight: bold; }
+    .log-item { margin: 0.5rem 0; padding: 0.5rem; background: #1e293b; border-radius: 6px; }
+    iframe { width: 100%; height: 600px; border: 1px solid #334155; border-radius: 8px; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Fibonacci Search Visualizer Test Suite (15 Test Cases)</h1>
+  <div id="test-results">Running tests...</div>
+  <iframe id="test-frame" src="index.html"></iframe>
+
+  <script>
+    const resultsContainer = document.getElementById('test-results');
+    const logs = [];
+
+    function log(testNum, testName, passed, details = "") {
+      logs.push({ testNum, testName, passed, details });
+      const div = document.createElement('div');
+      div.className = `log-item ${passed ? 'pass' : 'fail'}`;
+      div.innerHTML = `Test ${testNum}: ${testName} - ${passed ? '✓ PASSED' : '✕ FAILED'} ${details ? `(${details})` : ''}`;
+      resultsContainer.appendChild(div);
+      console.log(`[Test ${testNum}] ${testName}: ${passed ? 'PASS' : 'FAIL'}`, details);
+    }
+
+    const iframe = document.getElementById('test-frame');
+
+    iframe.onload = async () => {
+      resultsContainer.innerHTML = '';
+      const win = iframe.contentWindow;
+      const doc = iframe.contentDocument;
+
+      try {
+        // Test 1: Mathematical correctness of generateFibonacciNumbers
+        const fib9 = win.generateFibonacciNumbers(9);
+        const t1 = (fib9.fibM === 13 && fib9.fib1 === 8 && fib9.fib2 === 5);
+        log(1, "Fibonacci Generation (Math Correctness)", t1, `fibM=${fib9.fibM}, fib1=${fib9.fib1}, fib2=${fib9.fib2}`);
+
+        // Test 2: Target that exists (Default target 63 in [10, 22, 35, 47, 51, 63, 72, 85, 91])
+        const statesExist = win.generateSearchStates([10, 22, 35, 47, 51, 63, 72, 85, 91], 63);
+        const lastExist = statesExist[statesExist.length - 1];
+        const t2 = (lastExist.statusType === 'found' && lastExist.foundIndex === 5 && lastExist.comparisons === 3);
+        log(2, "Target Exists in Middle", t2, `Found at index ${lastExist.foundIndex}, Comps: ${lastExist.comparisons}`);
+
+        // Test 3: Target that does not exist (70)
+        const statesNotExist = win.generateSearchStates([10, 22, 35, 47, 51, 63, 72, 85, 91], 70);
+        const lastNotExist = statesNotExist[statesNotExist.length - 1];
+        const t3 = (lastNotExist.statusType === 'not-found' && lastNotExist.foundIndex === -1);
+        log(3, "Target Does Not Exist", t3, `Status: ${lastNotExist.statusType}`);
+
+        // Test 4: First element target (10)
+        const statesFirst = win.generateSearchStates([10, 22, 35, 47, 51, 63, 72, 85, 91], 10);
+        const lastFirst = statesFirst[statesFirst.length - 1];
+        const t4 = (lastFirst.statusType === 'found' && lastFirst.foundIndex === 0);
+        log(4, "First Element Target", t4, `Found at index ${lastFirst.foundIndex}`);
+
+        // Test 5: Last element target (91)
+        const statesLast = win.generateSearchStates([10, 22, 35, 47, 51, 63, 72, 85, 91], 91);
+        const lastLast = statesLast[statesLast.length - 1];
+        const t5 = (lastLast.statusType === 'found' && lastLast.foundIndex === 8);
+        log(5, "Last Element Target", t5, `Found at index ${lastLast.foundIndex}`);
+
+        // Test 6: Single-element array
+        const statesSingle = win.generateSearchStates([42], 42);
+        const lastSingle = statesSingle[statesSingle.length - 1];
+        const t6 = (lastSingle.statusType === 'found' && lastSingle.foundIndex === 0);
+        log(6, "Single Element Array", t6, `Found at index ${lastSingle.foundIndex}`);
+
+        // Test 7: Invalid Input validation
+        const valRes = win.validateAndParseInput("10, invalid, 30");
+        const t7 = (valRes.error !== undefined);
+        log(7, "Invalid Input Handled", t7, valRes.error);
+
+        // Test 8: Unsorted Array detection
+        const unsortedRes = win.validateAndParseInput("90, 10, 50");
+        const t8 = (!unsortedRes.isSorted);
+        log(8, "Unsorted Array Flagged", t8, "Flagged isSorted = false");
+
+        // Test 9: Next Step DOM Button
+        const nextBtn = doc.getElementById('btn-next-step');
+        const initialStep = win.AppState.currentStepIndex;
+        nextBtn.click();
+        const stepAfterNext = win.AppState.currentStepIndex;
+        const t9 = (stepAfterNext === initialStep + 1);
+        log(9, "Next Step Button Execution", t9, `Advanced from ${initialStep} to ${stepAfterNext}`);
+
+        // Test 10: Previous Step DOM Button
+        const prevBtn = doc.getElementById('btn-prev-step');
+        prevBtn.click();
+        const stepAfterPrev = win.AppState.currentStepIndex;
+        const t10 = (stepAfterPrev === initialStep);
+        log(10, "Previous Step Button Execution", t10, `Rewound from ${stepAfterNext} to ${stepAfterPrev}`);
+
+        // Test 11: Reset Button
+        nextBtn.click();
+        nextBtn.click();
+        doc.getElementById('btn-reset').click();
+        const t11 = (win.AppState.currentStepIndex === 0);
+        log(11, "Reset Visualization", t11, `Reset back to step ${win.AppState.currentStepIndex}`);
+
+        // Test 12: Random Array Generation
+        const prevArrayStr = win.AppState.array.join(',');
+        doc.getElementById('btn-random-array').click();
+        const newArrayStr = win.AppState.array.join(',');
+        const t12 = (win.AppState.array.length >= 5 && win.AppState.array.length <= 15);
+        log(12, "Random Array Generation", t12, `Generated ${win.AppState.array.length} items`);
+
+        // Test 13: Preset chips & Buttons exist and respond
+        doc.querySelector('.chip-btn[data-preset="default"]').click();
+        const t13 = (win.AppState.array.length === 9 && win.AppState.target === 63);
+        log(13, "Default Preset Restored", t13, `Array length 9, Target 63`);
+
+        // Test 14: Dark / Light Theme Toggle
+        const themeBtn = doc.getElementById('btn-toggle-theme');
+        themeBtn.click();
+        const isLight = doc.body.classList.contains('light-theme');
+        themeBtn.click();
+        const isDark = doc.body.classList.contains('dark-theme');
+        const t14 = (isLight && isDark);
+        log(14, "Theme Toggle Working", t14, "Toggled light then back to dark");
+
+        // Test 15: Sound Effects Toggle
+        const soundBtn = doc.getElementById('btn-toggle-sound');
+        const initialSound = win.AppState.soundEnabled;
+        soundBtn.click();
+        const soundToggled = win.AppState.soundEnabled;
+        soundBtn.click();
+        const t15 = (initialSound !== soundToggled && win.AppState.soundEnabled === initialSound);
+        log(15, "Sound Toggle Working", t15, "Toggled audio state cleanly");
+
+        // Summary
+        const allPassed = logs.every(l => l.passed);
+        window.__TEST_SUMMARY__ = { allPassed, passedCount: logs.filter(l => l.passed).length, total: logs.length };
+        console.log("TEST SUMMARY:", window.__TEST_SUMMARY__);
+
+      } catch (err) {
+        console.error("Test Suite Error:", err);
+        log(0, "Test Runner Execution", false, err.message);
+      }
+    };
+  </script>
+</body>
+</html>

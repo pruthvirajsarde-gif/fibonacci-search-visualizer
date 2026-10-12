@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fibonacci Search Visualizer | Interactive DSA Algorithm Learning Tool</title>
+  <meta name="description" content="An interactive, educational Fibonacci Search Algorithm visualizer for Data Structures and Algorithms (DSA) students. Learn step-by-step with animated probes, Fibonacci sequences, and comparisons.">
+  
+  <!-- Google Fonts: Outfit (Headings & Display), Plus Jakarta Sans (UI), Fira Code (Mono) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+  <!-- Accessibility Skip Link -->
+  <a href="#main-visualizer" class="skip-link">Skip to Visualizer</a>
+
+  <!-- Live Announcer for Screen Readers -->
+  <div id="live-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Sleek Frosted Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-group">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12h2a8 8 0 0 1 8 8v2"></path>
+            <path d="M6 12a4 4 0 0 1 4 4"></path>
+            <circle cx="18" cy="6" r="3"></circle>
+            <path d="m16 8-4.5 4.5"></path>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="title-with-badge">
+            <h1 class="app-title">Fibonacci Search</h1>
+            <span class="badge badge-accent">O(log n)</span>
+          </div>
+          <p class="app-subtitle">Interactive DSA Visualizer</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Audio Toggle Button -->
+        <button id="btn-toggle-sound" class="btn-icon" title="Toggle Sound Effects (M)" aria-label="Toggle Sound Effects">
+          <svg class="icon-sound-on" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          </svg>
+          <svg class="icon-sound-off" style="display:none;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
+
+        <!-- Theme Toggle Button -->
+        <button id="btn-toggle-theme" class="btn-icon" title="Toggle Dark/Light Mode (T)" aria-label="Toggle Theme">
+          <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="icon-moon" style="display:none;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <!-- Help / Shortcuts Button -->
+        <button id="btn-open-help" class="btn-icon" title="Keyboard Shortcuts & Guide (?)" aria-label="Keyboard Shortcuts">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main id="main-visualizer" class="app-main">
+    
+    <!-- 1. STREAMLINED CONTROL COMMAND BAR -->
+    <section class="card input-command-card" aria-labelledby="input-panel-title">
+      <div class="command-bar-row">
+        <!-- Array Input Capsule -->
+        <div class="input-capsule-group array-capsule">
+          <label for="array-input" class="capsule-label">Sorted Array</label>
+          <div class="capsule-field-wrap">
+            <input type="text" id="array-input" class="capsule-input mono-font" placeholder="e.g. 10, 22, 35, 47, 51, 63, 72, 85, 91" value="10, 22, 35, 47, 51, 63, 72, 85, 91" autocomplete="off" spellcheck="false">
+            <button id="btn-apply-array" class="capsule-action-btn" title="Apply Array">Apply</button>
+          </div>
+        </div>
+
+        <!-- Target Input Capsule -->
+        <div class="input-capsule-group target-capsule">
+          <label for="target-input" class="capsule-label">Search Target</label>
+          <div class="capsule-field-wrap">
+            <input type="number" id="target-input" class="capsule-input mono-font" placeholder="63" value="63">
+          </div>
+        </div>
+
+        <!-- Primary Action Buttons -->
+        <div class="command-buttons-group">
+          <button id="btn-random-array" class="btn btn-secondary btn-sm" title="Generate Random Sorted Array (5-15 elements)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="16 3 21 3 21 8"></polyline>
+              <line x1="4" y1="20" x2="21" y2="3"></line>
+              <polyline points="21 16 21 21 16 21"></polyline>
+              <line x1="15" y1="15" x2="21" y2="21"></line>
+              <line x1="4" y1="4" x2="9" y2="9"></line>
+            </svg>
+            <span>Random</span>
+          </button>
+          
+          <button id="btn-reset" class="btn btn-ghost btn-sm" title="Reset visualization to initial state (R)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+              <path d="M3 3v5h5"></path>
+            </svg>
+            <span>Reset</span>
+          </button>
+
+          <button id="btn-start-search" class="btn btn-primary btn-sm btn-cta" title="Start Search Animation (Space)">
+            <svg class="play-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <svg class="pause-icon" style="display:none;" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
+              <rect x="6" y="4" width="4" height="16"></rect>
+              <rect x="14" y="4" width="4" height="16"></rect>
+            </svg>
+            <span id="start-btn-text">Start Search</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Presets & Error Strip -->
+      <div class="command-sub-row">
+        <div class="preset-pills-wrap">
+          <span class="sub-label">Presets:</span>
+          <div class="preset-chips-group">
+            <button class="chip-btn" data-preset="default">Default (9)</button>
+            <button class="chip-btn" data-preset="found-first">First (10)</button>
+            <button class="chip-btn" data-preset="found-last">Last (91)</button>
+            <button class="chip-btn" data-preset="not-found">Missing (70)</button>
+            <button class="chip-btn" data-preset="single">Single [42]</button>
+            <button class="chip-btn" data-preset="large">15 Items</button>
+          </div>
+        </div>
+        <div id="input-error-msg" class="input-error" role="alert" style="display:none;"></div>
+      </div>
+
+      <!-- Accessible hidden heading to satisfy markup -->
+      <h2 id="input-panel-title" class="sr-only">Controls & Configuration</h2>
+    </section>
+
+    <!-- UNSORTED ARRAY MODAL / BANNER -->
+    <div id="unsorted-modal" class="unsorted-banner" role="alertdialog" aria-labelledby="unsorted-title" style="display:none;">
+      <div class="unsorted-content">
+        <div class="unsorted-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </div>
+        <div class="unsorted-text">
+          <h3 id="unsorted-title" class="unsorted-heading">Array Must Be Sorted</h3>
+          <p class="unsorted-desc">Fibonacci Search relies on elements in ascending order to partition the search space.</p>
+        </div>
+        <div class="unsorted-actions">
+          <button id="btn-sort-auto" class="btn btn-accent btn-sm">Sort Automatically</button>
+          <button id="btn-sort-cancel" class="btn btn-ghost btn-sm">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. MAIN ARRAY VISUALIZATION STAGE (HERO CENTERPIECE) -->
+    <section class="card array-stage-card" aria-label="Array Visualization">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <h2 class="stage-title">Interactive Array</h2>
+          <span id="array-stats-badge" class="badge badge-neutral">Length: 9 • Target: 63</span>
+          <span class="stage-hint-pill">Click any card to select target</span>
+        </div>
+
+        <!-- Clean Compact Legend -->
+        <div class="legend-bar" aria-label="Array element status legend">
+          <div class="legend-item"><span class="legend-dot dot-normal"></span><span>Normal</span></div>
+          <div class="legend-item"><span class="legend-dot dot-range"></span><span>Range</span></div>
+          <div class="legend-item"><span class="legend-dot dot-probe"></span><span>Probe (i)</span></div>
+          <div class="legend-item"><span class="legend-dot dot-comparing"></span><span>Comparing</span></div>
+          <div class="legend-item"><span class="legend-dot dot-eliminated"></span><span>Eliminated</span></div>
+          <div class="legend-item"><span class="legend-dot dot-found"></span><span>Found</span></div>
+        </div>
+      </div>
+
+      <!-- Array Container with smooth animated pointers -->
+      <div class="array-container-wrapper" id="array-wrapper">
+        <div id="array-container" class="array-container" role="region" aria-label="Interactive Array Display">
+          <!-- Dynamically populated array element boxes -->
+        </div>
+
+        <!-- Animated Gliding Pointer Badges -->
+        <div class="pointer-track" id="pointer-track" aria-hidden="true">
+          <div id="offset-indicator" class="pointer-badge offset-badge" style="display:none;">
+            <svg class="pointer-arrow-svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="12 4 4 18 20 18"></polygon>
+            </svg>
+            <span class="pointer-label">Offset: -1</span>
+          </div>
+          <div id="probe-indicator" class="pointer-badge probe-badge" style="display:none;">
+            <svg class="pointer-arrow-svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="12 4 4 18 20 18"></polygon>
+            </svg>
+            <span class="pointer-label">Probe (i): 4</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTEGRATED PLAYBACK CONTROLS BAR -->
+      <div class="controls-toolbar">
+        <div class="playback-buttons">
+          <button id="btn-prev-step" class="btn btn-control btn-sm" title="Previous Step (← Arrow)" disabled>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="19 20 9 12 19 4 19 20"></polygon>
+              <line x1="5" y1="19" x2="5" y2="5"></line>
+            </svg>
+            <span>Prev</span>
+          </button>
+
+          <button id="btn-play-pause" class="btn btn-play btn-sm" title="Play / Pause Animation (Space)">
+            <svg class="play-icon" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+            <svg class="pause-icon" style="display:none;" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
+              <rect x="6" y="4" width="4" height="16"></rect>
+              <rect x="14" y="4" width="4" height="16"></rect>
+            </svg>
+            <span id="play-pause-label">Play</span>
+          </button>
+
+          <button id="btn-next-step" class="btn btn-control btn-sm" title="Next Step (→ Arrow)">
+            <span>Next</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polygon points="5 4 15 12 5 20 5 4"></polygon>
+              <line x1="19" y1="5" x2="19" y2="19"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Speed Slider Capsule -->
+        <div class="speed-slider-group">
+          <span class="speed-label-text">Speed</span>
+          <span id="speed-value-badge" class="badge badge-speed">1.0x</span>
+          <input type="range" id="speed-slider" min="300" max="2200" step="100" value="1200" aria-label="Animation Delay in Milliseconds">
+        </div>
+
+        <!-- Live Metrics Badges -->
+        <div class="metrics-pill-group">
+          <div class="metric-pill">
+            <span class="metric-icon-wrap" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </span>
+            <div class="metric-details">
+              <span class="metric-title">Comparisons</span>
+              <span id="comparisons-count" class="metric-value">0</span>
+            </div>
+          </div>
+
+          <div class="metric-pill">
+            <span class="metric-icon-wrap" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="8" y1="6" x2="21" y2="6"></line>
+                <line x1="8" y1="12" x2="21" y2="12"></line>
+                <line x1="8" y1="18" x2="21" y2="18"></line>
+                <polyline points="3 6 4 7 6 5"></polyline>
+                <polyline points="3 12 4 13 6 11"></polyline>
+                <polyline points="3 18 4 19 6 17"></polyline>
+              </svg>
+            </span>
+            <div class="metric-details">
+              <span class="metric-title">Step Progress</span>
+              <span id="step-count" class="metric-value">0 / 0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. BALANCED 2-COLUMN DASHBOARD -->
+    <div class="main-dashboard-grid">
+      
+      <!-- LEFT COLUMN: LIVE COMPARISON & FIBONACCI STATE -->
+      <div class="dashboard-col left-col">
+        
+        <!-- CURRENT COMPARISON CARD -->
+        <div class="card comparison-card" id="comparison-card" aria-labelledby="comp-panel-title">
+          <div class="panel-header">
+            <h2 id="comp-panel-title" class="panel-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              </svg>
+              Comparison & Status
+            </h2>
+            <span id="comp-status-badge" class="badge badge-warning">Awaiting probe</span>
+          </div>
+
+          <!-- Comparison Arena -->
+          <div class="comparison-arena">
+            <div class="comp-box comp-probe-box" id="comp-probe-box">
+              <span class="comp-tag">Array[<span id="comp-probe-idx">4</span>]</span>
+              <div id="comp-probe-val" class="comp-val">51</div>
+              <span class="comp-label">Probed Item</span>
+            </div>
+
+            <div class="comp-operator-box" id="comp-operator-box">
+              <div id="comp-operator-sign" class="operator-sign">&lt;</div>
+              <span id="comp-operator-sub" class="operator-sub">Is Smaller</span>
+            </div>
+
+            <div class="comp-box comp-target-box" id="comp-target-box">
+              <span class="comp-tag">Target</span>
+              <div id="comp-target-val" class="comp-val">63</div>
+              <span class="comp-label">Target Item</span>
+            </div>
+          </div>
+
+          <!-- Plain-English Verdict Box -->
+          <div class="comp-verdict-box" id="comp-verdict-box">
+            <div class="verdict-icon-container" id="verdict-icon">
+              <!-- SVG dynamically populated by script.js -->
+            </div>
+            <div class="verdict-text-wrap">
+              <h3 id="verdict-headline" class="verdict-headline">Ready to search for 63</h3>
+              <p id="verdict-desc" class="verdict-desc">
+                Click "Start Search" or "Next" to calculate the first Fibonacci probe index.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- FINAL RESULT CARD (POPS IN ON COMPLETE) -->
+        <div id="result-banner" class="card result-card" style="display:none;" aria-live="polite">
+          <div class="result-badge-row">
+            <div id="result-icon-circle" class="result-icon-circle">
+              <!-- SVG dynamically populated by script.js -->
+            </div>
+            <div>
+              <h3 id="result-title" class="result-title">Element Found!</h3>
+              <p id="result-subtitle" class="result-subtitle">Target successfully located in the array.</p>
+            </div>
+          </div>
+
+          <div class="result-details-grid">
+            <div class="res-item">
+              <span class="res-label">Target</span>
+              <span id="res-val-target" class="res-value">63</span>
+            </div>
+            <div class="res-item">
+              <span class="res-label">Found Index</span>
+              <span id="res-val-index" class="res-value">5</span>
+            </div>
+            <div class="res-item">
+              <span class="res-label">Comparisons</span>
+              <span id="res-val-comps" class="res-value">3</span>
+            </div>
+            <div class="res-item">
+              <span class="res-label">Steps</span>
+              <span id="res-val-steps" class="res-value">7</span>
+            </div>
+          </div>
+
+          <p id="result-explanation" class="result-explanation-text">
+            Search completed successfully.
+          </p>
+        </div>
+
+        <!-- FIBONACCI VARIABLES & SEARCH RANGE HUD -->
+        <div class="card hud-card" aria-labelledby="hud-panel-title">
+          <div class="panel-header">
+            <h2 id="hud-panel-title" class="panel-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path>
+                <path d="M6 6h10"></path>
+                <path d="M6 10h10"></path>
+              </svg>
+              Fibonacci State & Math
+            </h2>
+            <div class="hud-badges-group">
+              <span id="range-active-badge" class="badge badge-neutral">Active: [0 .. 8]</span>
+              <span id="fib-m-index-badge" class="badge badge-accent">m = 7 (F7 = 13)</span>
+            </div>
+          </div>
+
+          <!-- Fibonacci Ribbon Tape -->
+          <div class="fib-ribbon-wrapper">
+            <span class="hud-sub-label">Sequence (F<sub>m</sub> &ge; n):</span>
+            <div id="fib-sequence-tape" class="fib-sequence-tape" role="list" aria-label="Fibonacci Sequence Numbers">
+              <!-- Dynamic Fibonacci numbers pills -->
+            </div>
+          </div>
+
+          <!-- Triple Fibonacci Variables -->
+          <div class="fib-variables-grid">
+            <div class="fib-var-card var-fibM" id="var-card-fibM">
+              <div class="var-badge">fibM (Fₘ)</div>
+              <div id="val-fibM" class="var-value">13</div>
+              <div class="var-sub">Range divisor</div>
+            </div>
+
+            <div class="fib-var-card var-fib1" id="var-card-fib1">
+              <div class="var-badge">fib1 (Fₘ₋₁)</div>
+              <div id="val-fib1" class="var-value">8</div>
+              <div class="var-sub">Right span</div>
+            </div>
+
+            <div class="fib-var-card var-fib2" id="var-card-fib2">
+              <div class="var-badge">fib2 (Fₘ₋₂)</div>
+              <div id="val-fib2" class="var-value">5</div>
+              <div class="var-sub">Probe offset</div>
+            </div>
+          </div>
+
+          <!-- Search Range HUD Badges -->
+          <div class="range-stats-grid">
+            <div class="range-stat-box">
+              <span class="range-label">Low</span>
+              <span id="stat-low" class="range-num">0</span>
+              <span class="range-note">offset + 1</span>
+            </div>
+
+            <div class="range-stat-box">
+              <span class="range-label">High</span>
+              <span id="stat-high" class="range-num">8</span>
+              <span class="range-note">min(off+fibM, n-1)</span>
+            </div>
+
+            <div class="range-stat-box">
+              <span class="range-label">Offset</span>
+              <span id="stat-offset" class="range-num">-1</span>
+              <span class="range-note">Eliminated edge</span>
+            </div>
+
+            <div class="range-stat-box highlight-probe">
+              <span class="range-label">Probe (i)</span>
+              <span id="stat-probe" class="range-num">4</span>
+              <span class="range-note">min(off+fib2, n-1)</span>
+            </div>
+          </div>
+
+          <!-- Live Formula Bar -->
+          <div class="hud-formula-bar">
+            <div id="probe-formula-text" class="formula-text">
+              <code>i = min(offset + fib2, n - 1) = min(-1 + 5, 8) = 4</code>
+            </div>
+            <code id="fib-equation" class="equation-text">fibM (13) = fib1 (8) + fib2 (5)</code>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN: TABBED EXPLORER (STEPS, CODE, COMPLEXITY) -->
+      <div class="dashboard-col right-col">
+        
+        <div class="card explorer-card">
+          <!-- Explorer Tab Bar -->
+          <div class="tab-bar" role="tablist" aria-label="Algorithm Explorer Tabs">
+            <button class="tab-btn active" id="tab-btn-steps" data-tab="tab-steps" role="tab" aria-selected="true" aria-controls="tab-steps">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="8" y1="6" x2="21" y2="6"></line>
+                <line x1="8" y1="12" x2="21" y2="12"></line>
+                <line x1="8" y1="18" x2="21" y2="18"></line>
+                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+              </svg>
+              <span>Steps</span>
+              <span id="current-step-badge" class="badge badge-accent tab-badge">Step 0</span>
+            </button>
+
+            <button class="tab-btn" id="tab-btn-code" data-tab="tab-code" role="tab" aria-selected="false" aria-controls="tab-code">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              </svg>
+              <span>Pseudocode</span>
+            </button>
+
+            <button class="tab-btn" id="tab-btn-complexity" data-tab="tab-complexity" role="tab" aria-selected="false" aria-controls="tab-complexity">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>Complexity</span>
+            </button>
+          </div>
+
+          <!-- TAB CONTENT 1: STEP-BY-STEP TIMELINE -->
+          <div class="tab-pane active" id="tab-steps" role="tabpanel" aria-labelledby="tab-btn-steps">
+            <div class="tab-pane-header">
+              <span class="pane-note">Click any step to jump directly to it:</span>
+              <button id="btn-clear-history" class="btn btn-ghost btn-sm" title="Focus Active Step">Focus Active</button>
+            </div>
+            <div id="steps-timeline" class="steps-timeline" role="log" aria-label="Step Execution Timeline">
+              <!-- Dynamic step cards -->
+            </div>
+          </div>
+
+          <!-- TAB CONTENT 2: SYNCHRONIZED PSEUDOCODE VIEWER -->
+          <div class="tab-pane" id="tab-code" role="tabpanel" aria-labelledby="tab-btn-code" style="display:none;">
+            <div class="tab-pane-header">
+              <span class="pane-note">Active line highlights in real-time:</span>
+              <span class="badge badge-neutral">C++ / Java Style</span>
+            </div>
+            <pre id="pseudocode-container" class="pseudocode-pre"><code id="pseudocode-content">
+<span class="code-line" data-line="1"><span class="c-k">fib2</span> = 0; <span class="c-k">fib1</span> = 1; <span class="c-k">fibM</span> = fib2 + fib1;</span>
+<span class="code-line" data-line="2"><span class="c-kw">while</span> (fibM &lt; n) { fib2 = fib1; fib1 = fibM; fibM = fib2 + fib1; }</span>
+<span class="code-line" data-line="3"><span class="c-k">offset</span> = -1;</span>
+<span class="code-line" data-line="4"><span class="c-kw">while</span> (fibM &gt; 1) {</span>
+<span class="code-line" data-line="5">    <span class="c-k">i</span> = min(offset + fib2, n - 1);</span>
+<span class="code-line" data-line="6">    <span class="c-kw">if</span> (arr[i] &lt; target) {</span>
+<span class="code-line" data-line="7">        fibM = fib1; fib1 = fib2; fib2 = fibM - fib1; offset = i;</span>
+<span class="code-line" data-line="8">    } <span class="c-kw">else if</span> (arr[i] &gt; target) {</span>
+<span class="code-line" data-line="9">        fibM = fib2; fib1 = fib1 - fib2; fib2 = fibM - fib1;</span>
+<span class="code-line" data-line="10">    } <span class="c-kw">else</span> { <span class="c-kw">return</span> i; }</span>
+<span class="code-line" data-line="11">}</span>
+<span class="code-line" data-line="12"><span class="c-kw">if</span> (fib1 == 1 &amp;&amp; offset + 1 &lt; n &amp;&amp; arr[offset + 1] == target)</span>
+<span class="code-line" data-line="13">    <span class="c-kw">return</span> offset + 1;</span>
+<span class="code-line" data-line="14"><span class="c-kw">return</span> -1; <span class="c-cm">// Target not found</span></span>
+            </code></pre>
+          </div>
+
+          <!-- TAB CONTENT 3: COMPLEXITY CARD -->
+          <div class="tab-pane" id="tab-complexity" role="tabpanel" aria-labelledby="tab-btn-complexity" style="display:none;">
+            <div class="complexity-grid">
+              <div class="complexity-stat">
+                <span class="cx-label">Best Case</span>
+                <span class="cx-val cx-good">O(1)</span>
+                <span class="cx-desc">Matched on 1st probe</span>
+              </div>
+
+              <div class="complexity-stat">
+                <span class="cx-label">Average Case</span>
+                <span class="cx-val cx-avg">O(log n)</span>
+                <span class="cx-desc">Fibonacci reduction</span>
+              </div>
+
+              <div class="complexity-stat">
+                <span class="cx-label">Worst Case</span>
+                <span class="cx-val cx-avg">O(log n)</span>
+                <span class="cx-desc">&approx; 1.44 log<sub>2</sub> n operations</span>
+              </div>
+
+              <div class="complexity-stat">
+                <span class="cx-label">Auxiliary Space</span>
+                <span class="cx-val cx-good">O(1)</span>
+                <span class="cx-desc">3 iterative variables</span>
+              </div>
+            </div>
+
+            <div class="complexity-advantage">
+              <div class="advantage-badge">Key Hardware Advantage:</div>
+              <p>Fibonacci Search uses <strong>only additions and subtractions</strong> to calculate probe indices, eliminating division (costly on RISC processors) unlike Binary Search. It also provides superior memory locality on non-uniform storage media.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- 4. COLLAPSIBLE EDUCATIONAL THEORY & COMPARISON GUIDE -->
+    <details class="card edu-accordion" aria-labelledby="edu-title">
+      <summary class="edu-summary">
+        <div class="edu-summary-content">
+          <div class="edu-summary-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 id="edu-title" class="edu-summary-title">Algorithm Theory & Binary Search Comparison</h2>
+            <p class="edu-summary-sub">Click to expand DSA mathematical concepts, step rules, and comparison table</p>
+          </div>
+        </div>
+        <div class="edu-chevron">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+      </summary>
+
+      <div class="edu-expanded-content">
+        <div class="edu-grid">
+          <!-- What is Fibonacci Search -->
+          <div class="edu-box">
+            <h3 class="edu-heading">What is Fibonacci Search?</h3>
+            <p class="edu-quote">
+              "Fibonacci Search is an efficient comparison-based searching algorithm that works on a sorted array. It uses Fibonacci numbers to divide the search space instead of using the exact middle element like Binary Search."
+            </p>
+            <p class="edu-text">
+              While Binary Search splits an array strictly in half (1/2 and 1/2), Fibonacci Search partitions the search interval into two sub-intervals with lengths corresponding to consecutive Fibonacci numbers (F<sub>m-2</sub> and F<sub>m-1</sub>). This produces a split ratio close to the golden ratio (&phi; &approx; 0.618).
+            </p>
+          </div>
+
+          <!-- How It Works Step-by-Step -->
+          <div class="edu-box">
+            <h3 class="edu-heading">How the Algorithm Works (Step-by-Step)</h3>
+            <ol class="edu-steps-list">
+              <li><strong>Generate Fibonacci numbers:</strong> Find the smallest F<sub>m</sub> &ge; n (array size). Set <code>fibM = F<sub>m</sub></code>, <code>fib1 = F<sub>m-1</sub></code>, <code>fib2 = F<sub>m-2</sub></code>.</li>
+              <li><strong>Initialize offset:</strong> Set <code>offset = -1</code> (marks eliminated items on the left).</li>
+              <li><strong>Select probe index:</strong> Calculate <code>i = min(offset + fib2, n - 1)</code>.</li>
+              <li><strong>Compare probe with target:</strong>
+                <ul>
+                  <li>If <code>arr[i] &lt; target</code>: Target is to the right. Discard left subarray, set <code>offset = i</code>, and move Fibonacci numbers down by 1 rank (<code>fibM = fib1</code>, <code>fib1 = fib2</code>, <code>fib2 = fibM - fib1</code>).</li>
+                  <li>If <code>arr[i] &gt; target</code>: Target is to the left. Discard right subarray, keep <code>offset</code>, and move Fibonacci numbers down by 2 ranks (<code>fibM = fib2</code>, <code>fib1 = fib1 - fib2</code>, <code>fib2 = fibM - fib1</code>).</li>
+                  <li>If <code>arr[i] == target</code>: Match found! Return index <code>i</code>.</li>
+                </ul>
+              </li>
+              <li><strong>Boundary check:</strong> When <code>fibM &le; 1</code>, if <code>fib1 == 1</code> and <code>arr[offset + 1] == target</code>, return <code>offset + 1</code>. Otherwise return <code>-1</code>.</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- FIBONACCI SEARCH VS BINARY SEARCH TABLE -->
+        <div class="comparison-table-wrapper">
+          <h3 class="edu-heading">Fibonacci Search vs. Binary Search</h3>
+          <div class="table-responsive">
+            <table class="dsa-table">
+              <thead>
+                <tr>
+                  <th scope="col">Feature</th>
+                  <th scope="col" class="highlight-col">Fibonacci Search</th>
+                  <th scope="col">Binary Search</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Array Requirement</strong></td>
+                  <td>Sorted array</td>
+                  <td>Sorted array</td>
+                </tr>
+                <tr>
+                  <td><strong>Partition Technique</strong></td>
+                  <td>Fibonacci numbers (F<sub>m-2</sub> and F<sub>m-1</sub>)</td>
+                  <td>Divide by 2 (Middle element)</td>
+                </tr>
+                <tr>
+                  <td><strong>Average Time Complexity</strong></td>
+                  <td><code>O(log n)</code></td>
+                  <td><code>O(log n)</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Worst Time Complexity</strong></td>
+                  <td><code>O(log n)</code> (&approx; 1.44 log<sub>2</sub> n)</td>
+                  <td><code>O(log n)</code> (log<sub>2</sub> n)</td>
+                </tr>
+                <tr>
+                  <td><strong>Auxiliary Space</strong></td>
+                  <td><code>O(1)</code></td>
+                  <td><code>O(1)</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Operations Used</strong></td>
+                  <td><strong>Only Addition & Subtraction</strong> (+) / (-)</td>
+                  <td>Division or Bit Shift (/) / (&gt;&gt;)</td>
+                </tr>
+                <tr>
+                  <td><strong>Cache & Non-uniform Access</strong></td>
+                  <td>Better for storage media with non-uniform access</td>
+                  <td>Jumps to center; uniform distribution</td>
+                </tr>
+                <tr>
+                  <td><strong>Core Idea</strong></td>
+                  <td>Golden-ratio Fibonacci partitioning</td>
+                  <td>Equi-partition divide-and-conquer</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </details>
+
+  </main>
+
+  <!-- HELP & KEYBOARD SHORTCUTS MODAL -->
+  <div id="help-modal" class="modal-backdrop" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="help-modal-title" class="modal-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          Keyboard Shortcuts & Guide
+        </h2>
+        <button id="btn-close-help" class="btn-icon" aria-label="Close dialog">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-intro">Control the Fibonacci Search visualizer using your keyboard:</p>
+        
+        <div class="shortcuts-grid">
+          <div class="shortcut-row">
+            <kbd class="key-cap">Space</kbd>
+            <span>Play / Pause automated search animation</span>
+          </div>
+          <div class="shortcut-row">
+            <kbd class="key-cap">→</kbd>
+            <span>Execute exactly one step forward (Next)</span>
+          </div>
+          <div class="shortcut-row">
+            <kbd class="key-cap">←</kbd>
+            <span>Step backward to previous state (Prev)</span>
+          </div>
+          <div class="shortcut-row">
+            <kbd class="key-cap">R</kbd>
+            <span>Reset visualization to start state</span>
+          </div>
+          <div class="shortcut-row">
+            <kbd class="key-cap">M</kbd>
+            <span>Toggle synthetic audio sound effects</span>
+          </div>
+          <div class="shortcut-row">
+            <kbd class="key-cap">T</kbd>
+            <span>Toggle Dark / Light visual theme</span>
+          </div>
+        </div>
+
+        <div class="modal-tips">
+          <h4>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>
+            Interactive Tips
+          </h4>
+          <p>Click any array box on screen to immediately set it as the Search Target! In the Steps tab, click any previous or future step card to jump straight to that moment.</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-modal-got-it" class="btn btn-primary btn-sm">Got it!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>Fibonacci Search Visualizer • Built for DSA Students & Algorithms Education</p>
+      <p class="footer-sub">Runs client-side with Vanilla JavaScript • Zero external framework overhead</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+# Logs
+*.log
+firebase-debug.log
+
+# Dependencies
+node_modules/
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
